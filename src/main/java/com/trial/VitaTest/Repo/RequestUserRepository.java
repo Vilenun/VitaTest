@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface RequestUserRepository extends CrudRepository<RequestUser, Long> {
 
-    public Optional<RequestUser> findRecipeUserByUsername(String username);
+    public Optional<RequestUser> findRequestUserByUsername(String username);
 }

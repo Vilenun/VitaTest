@@ -64,7 +64,7 @@ public class Request {
         this.name = name;
     }
 
-      public void setRequestStatus(String requestStatus) {
+    public void setRequestStatus(String requestStatus) {
         this.requestStatus = requestStatus;
     }
 }
