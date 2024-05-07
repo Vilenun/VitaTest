@@ -1,5 +1,6 @@
 package com.trial.VitaTest.Logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -8,9 +9,10 @@ import java.util.List;
 
 @Entity
 public class RequestUser {
+    @JsonIgnore
     @Getter
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Getter
     private String username;
@@ -34,8 +36,8 @@ public class RequestUser {
         this.password = password;
     }
 
-    public void setAuthority(String authority) {
-        this.authority = authority;
+    public void setAuthority(String role) {
+        this.authority = role;
     }
 
     public List<Request> getRequests() {

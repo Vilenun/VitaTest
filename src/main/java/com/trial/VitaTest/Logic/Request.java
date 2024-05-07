@@ -14,17 +14,17 @@ import java.util.Objects;
 @Entity
 @Setter
 @NoArgsConstructor
-@Table(name="QUERIES")
+@Table(name="Requests")
 public class Request {
     @JsonIgnore
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false)
     private long id;
 
     @Getter
     @NotBlank
-    @Column(name = "request")
+    @Column(name = "name")
     private String name;
 
     @Getter
