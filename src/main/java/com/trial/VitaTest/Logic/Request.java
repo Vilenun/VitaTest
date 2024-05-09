@@ -24,8 +24,8 @@ public class Request {
 
     @Getter
     @NotBlank
-    @Column(name = "name")
-    private String name;
+    @Column(name = "request")
+    private String request;
 
     @Getter
     @Column(name = "requestStatus")
@@ -43,7 +43,7 @@ public class Request {
 
     public Request(long id, String name, String requestStatus, Instant date) {
         super();
-        this.name = name;
+        this.request = name;
         this.requestStatus = requestStatus;
     }
 
@@ -52,16 +52,16 @@ public class Request {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Request request = (Request) o;
-        return id == request.id && Objects.equals(name, request.name) && Objects.equals(requestStatus, request.requestStatus) && Objects.equals(date, request.date);
+        return id == request.id && Objects.equals(request, request.request) && Objects.equals(requestStatus, request.requestStatus) && Objects.equals(date, request.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, requestStatus, date);
+        return Objects.hash(id, request, requestStatus, date);
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.request = name;
     }
 
     public void setRequestStatus(String requestStatus) {

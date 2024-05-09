@@ -19,19 +19,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth ->
                         auth.requestMatchers(HttpMethod.POST, "/register")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/test").hasRole("USER")
                                 .requestMatchers(HttpMethod.GET, "/checkRequests").hasRole("USER")
                                 .requestMatchers(HttpMethod.POST, "/create").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/send").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/update").hasRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/checkSent/desc").hasRole("OPER")
-                                .requestMatchers(HttpMethod.GET, "/checkSent/asc").hasRole("OPER")
-                                .requestMatchers(HttpMethod.GET, "/checkName/desc").hasRole("OPER")
-                                .requestMatchers(HttpMethod.GET, "/checkName/asc").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/checkSent").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/checkName").hasRole("OPER")
                                 .requestMatchers(HttpMethod.PUT, "/decision").hasRole("OPER")
                                 .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/giveOperatorRole").hasRole("ADMIN")
-                                .anyRequest().permitAll())
+                                .anyRequest().denyAll())
                 );
         return http.build();
     }

@@ -28,10 +28,6 @@ public class RequestService {
         requestRepository.save(requestToUpdate);
     }
 
-//    public Page<Request> findIdAsc(int id, Pageable page){
-//        return requestRepository.findByUserIdOrderByDateAsc(id,page);
-//    }
-
     public Optional<Request> findId(Long id){
         return requestRepository.findById(id);
     }
@@ -39,32 +35,28 @@ public class RequestService {
     public Page<Request> findRequests(int id, Pageable page, String order){
         switch (order){
             case ("asc"): return requestRepository.findByUserIdOrderByDateAsc(id, page);
-
             case ("desc"): return requestRepository.findByUserIdOrderByDateDesc(id, page);
-
             default: throw new RuntimeException();
-
         }
     }
 
-    public Page<Request> findSentDesc(Pageable page){
-        return requestRepository.findByRequestStatusOrderByDateDesc(RequestStatus.SENT.getStatus(), page);
-    }
-    public Page<Request> findSentAsc(Pageable page){
-        return requestRepository.findByRequestStatusOrderByDateAsc(RequestStatus.SENT.getStatus(), page);
-    }
-
-    public Page<Request> findNameDesc(List<Integer> ids, Pageable page){
-        return requestRepository.findByUserIdInAndRequestStatusOrderByDateDesc(ids, RequestStatus.SENT.getStatus(), page);
-    }
-    public Page<Request> findNameAsc(List<Integer> ids, Pageable page){
-        return requestRepository.findByUserIdInAndRequestStatusOrderByDateAsc(ids, RequestStatus.SENT.getStatus(), page);
-    }
-    public long count(){
-        return requestRepository.count();
+    public Page<Request> findSent(Pageable page, String order){
+        switch (order){
+            case ("asc"): return requestRepository.findByRequestStatusOrderByDateAsc(RequestStatus.SENT.getStatus(), page);
+            case ("desc"): return requestRepository.findByRequestStatusOrderByDateDesc(RequestStatus.SENT.getStatus(), page);
+            default: throw new RuntimeException();
+        }
     }
 
-    public void decide(String decision, Long id) throws Exception {
+    public Page<Request> findName(List<Integer> ids, Pageable page, String order){
+        switch (order){
+            case ("asc"): return requestRepository.findByUserIdInAndRequestStatusOrderByDateAsc(ids, RequestStatus.SENT.getStatus(), page);
+            case ("desc"): return requestRepository.findByUserIdInAndRequestStatusOrderByDateDesc(ids, RequestStatus.SENT.getStatus(), page);
+            default: throw new RuntimeException();
+        }
+    }
+
+    public void decide(String decision, Long id) {
         Request requestToUpdate = requestRepository.findById(id).orElseThrow();
         switch (decision) {
             case ("accept"):
@@ -73,7 +65,7 @@ public class RequestService {
             case ("deny"):
                 requestToUpdate.setRequestStatus(RequestStatus.DENIED.getStatus());
             break;
-            default: throw new Exception();
+            default: throw new RuntimeException();
         }
         requestRepository.save(requestToUpdate);
     }
