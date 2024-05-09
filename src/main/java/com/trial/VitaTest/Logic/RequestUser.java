@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 public class RequestUser {
-    @JsonIgnore
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,9 +16,11 @@ public class RequestUser {
     @Getter
     private String username;
     @Getter
+    @JsonIgnore
     private String password;
     @Getter
     private String authority;
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Request> requests = new ArrayList<>();
 

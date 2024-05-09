@@ -20,8 +20,7 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.POST, "/register")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/test").hasRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/check/desc").hasRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/check/asc").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/checkRequests").hasRole("USER")
                                 .requestMatchers(HttpMethod.POST, "/create").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/send").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/update").hasRole("USER")
@@ -30,6 +29,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/checkName/desc").hasRole("OPER")
                                 .requestMatchers(HttpMethod.GET, "/checkName/asc").hasRole("OPER")
                                 .requestMatchers(HttpMethod.PUT, "/decision").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/giveOperatorRole").hasRole("ADMIN")
                                 .anyRequest().permitAll())
                 );
         return http.build();

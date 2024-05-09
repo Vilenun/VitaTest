@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -55,32 +56,34 @@ public class RequestController {
         requestService.save(query);
         return ResponseEntity.ok("done");
     }
-    @GetMapping(path = "/test")
-    public String test() {
-        return "Access to '/test' granted";
-    }
-    @GetMapping(path = "/check/asc",params = "page")
-    public ResponseEntity checkAsc(Principal principal,@RequestParam(defaultValue = "1") int page) {
+    @GetMapping(path = "/checkRequests")
+    public ResponseEntity checkAsc(Principal principal,@RequestParam(defaultValue = "1",required = false) int page, @RequestParam (defaultValue = "asc", required = false) String order) {
         if (page < 1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        Page<Request> chosenPage = requestService.findIdAsc(repository.findRequestUserByUsername(principal.getName()).get().getId(), PageRequest.of(page - 1, 5));
-        if (chosenPage.getTotalPages() < page){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        try {
+            Page<Request> chosenPage = requestService.findRequests(repository.findRequestUserByUsername(principal.getName()).get().getId(), PageRequest.of(page - 1, 5),order);
+            if (chosenPage.getTotalPages() < page){
+                return ResponseEntity.badRequest().body("Page doesn't exist");
+            }
+            return ResponseEntity.ok(chosenPage.getContent());
+        } catch (RuntimeException e){
+            return ResponseEntity.badRequest().body("Can only choose \"asc\" and \"desc\"");
         }
-        return ResponseEntity.ok(chosenPage.getContent());
+
     }
-    @GetMapping(path = "/check/desc",params = "page")
-    public ResponseEntity checkDesc(Principal principal,@RequestParam(defaultValue = "1") int page) {
-        if (page < 1){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        Page<Request> chosenPage = requestService.findIdDesc(repository.findRequestUserByUsername(principal.getName()).get().getId(), PageRequest.of(page - 1, 5));
-        if (chosenPage.getTotalPages() < page){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return ResponseEntity.ok(chosenPage.getContent());
-    }
+//    @GetMapping(path = "/check/desc")
+//    public ResponseEntity checkDesc(Principal principal,@RequestParam(defaultValue = "1", required = false) int page) {
+//        if (page < 1){
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+//        }
+//        Page<Request> chosenPage = requestService.findIdDesc(repository.findRequestUserByUsername(principal.getName()).get().getId(), PageRequest.of(page - 1, 5));
+//        if (chosenPage.getTotalPages() < page){
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+//        }
+//        return ResponseEntity.ok(chosenPage.getContent());
+//    }
     @PutMapping(path = "/update", params = "id")
     public ResponseEntity updateRequest(Principal principal, @RequestParam Long id, @RequestBody RequestRequest request){
         if (requestService.findId(id).isEmpty()){
@@ -88,7 +91,7 @@ public class RequestController {
         }
         if (repository.findRequestUserByUsername(principal.getName()).get().getId() != requestService.findId(id).get().getUser().getId())
         {
-            return ResponseEntity.badRequest().body("No request found");
+            return ResponseEntity.badRequest().body("Not your request");
         }
         if (!RequestStatus.DRAFT.getStatus().equals(requestService.findId(id).get().getRequestStatus())){
             return ResponseEntity.badRequest().body("Request is not for draft, can't change");
@@ -120,8 +123,8 @@ public class RequestController {
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-    @GetMapping(path = "/checkSent/asc",params = "page")
-    public ResponseEntity checkSentAsc(Principal principal,@RequestParam(defaultValue = "1") int page) {
+    @GetMapping(path = "/checkSent/asc")
+    public ResponseEntity checkSentAsc(Principal principal,@RequestParam(defaultValue = "1", required = false) int page) {
         if (page < 1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -131,8 +134,8 @@ public class RequestController {
         }
         return ResponseEntity.ok(chosenPage.getContent());
     }
-    @GetMapping(path = "/checkSent/desc",params = "page")
-    public ResponseEntity checkSentDesc(Principal principal,@RequestParam(defaultValue = "1") int page) {
+    @GetMapping(path = "/checkSent/desc")
+    public ResponseEntity checkSentDesc(Principal principal,@RequestParam(defaultValue = "1", required = false) int page) {
         if (page < 1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -184,6 +187,30 @@ public class RequestController {
             return ResponseEntity.badRequest().body("Wrong decision");
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+    @GetMapping (path = "/users")
+    public ResponseEntity checkUsers(@RequestParam (value = "name", required=false) String name) {
+        if (name == null || name.isEmpty()){
+            return ResponseEntity.ok(repository.findAll());
+        }
+        else if (repository.findByUsernameIgnoreCaseContains(name).isEmpty()){
+            return ResponseEntity.badRequest().body("No user found");
+        }
+        return ResponseEntity.ok().body(repository.findByUsernameIgnoreCaseContains(name).get());
+
+    }
+
+    @PutMapping (path = "/giveOperatorRole")
+    public ResponseEntity changeAuthority(@RequestParam Long id){
+        if (repository.findById(id).isEmpty()){
+            return ResponseEntity.badRequest().body("No user found");
+        }
+        RequestUser user = repository.findById(id).get();
+        if (user.getAuthority().equals("ROLE_USER")){
+            user.setAuthority("ROLE_OPER");
+            repository.save(user);
+        } else return ResponseEntity.badRequest().body("Can't change that role");
+        return null;
     }
 
     record RegistrationRequest(String username, String password, String authority) { }
