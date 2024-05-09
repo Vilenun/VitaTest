@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends PagingAndSortingRepository<Request, Long>,CrudRepository<Request, Long> {
@@ -16,4 +17,6 @@ public interface RequestRepository extends PagingAndSortingRepository<Request, L
     Page<Request> findByUserIdOrderByDateDesc(int id, Pageable paging);
 
     Page<Request> findByUserIdOrderByDateAsc(int id, Pageable paging);
+
+
 }

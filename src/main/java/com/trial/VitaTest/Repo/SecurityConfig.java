@@ -23,6 +23,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/check/desc").hasRole("USER")
                                 .requestMatchers(HttpMethod.GET, "/check/asc").hasRole("USER")
                                 .requestMatchers(HttpMethod.POST, "/create").hasRole("USER")
+                                .requestMatchers(HttpMethod.PUT, "/send").hasRole("USER")
+                                .requestMatchers(HttpMethod.PUT, "/update").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/checkSent/desc").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/checkSent/asc").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/checkName/desc").hasRole("OPER")
+                                .requestMatchers(HttpMethod.GET, "/checkName/asc").hasRole("OPER")
                                 .anyRequest().permitAll())
                 );
         return http.build();

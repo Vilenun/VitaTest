@@ -35,6 +35,7 @@ public class Request {
     @Column(name = "date")
     private Instant date;
 
+    @Getter
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

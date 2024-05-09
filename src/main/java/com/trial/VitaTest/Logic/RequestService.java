@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RequestService {
@@ -22,9 +23,14 @@ public class RequestService {
         Request savedRequest = requestRepository.save(request);
         return savedRequest.getId();
     }
-    public void update(long id,Request request){
+    public void update(long id,String request){
         Request requestToUpdate = requestRepository.findById(id).orElseThrow();
-        requestToUpdate.setName(request.getName());
+        requestToUpdate.setName(request);
+        requestRepository.save(requestToUpdate);
+    }
+    public void send(long id){
+        Request requestToUpdate = requestRepository.findById(id).orElseThrow();
+        requestToUpdate.setRequestStatus(RequestStatus.SENT.getStatus());
         requestRepository.save(requestToUpdate);
     }
 
@@ -32,6 +38,9 @@ public class RequestService {
         return requestRepository.findByUserIdOrderByDateAsc(id,page);
     }
 
+    public Optional<Request> findId(Long id){
+        return requestRepository.findById(id);
+    }
 
     public Page<Request> findIdDesc(int id, Pageable page){
         return requestRepository.findByUserIdOrderByDateDesc(id, page);
