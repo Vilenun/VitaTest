@@ -60,8 +60,8 @@ public class Request {
         return Objects.hash(id, request, requestStatus, date);
     }
 
-    public void setName(String name) {
-        this.request = name;
+    public void setRequest(String request) {
+        this.request = request;
     }
 
     public void setRequestStatus(String requestStatus) {

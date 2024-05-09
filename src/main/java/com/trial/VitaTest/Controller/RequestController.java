@@ -49,7 +49,7 @@ public class RequestController {
     @PostMapping(path = "/create")
     public ResponseEntity create(@RequestBody RequestRequest request, Principal principal){
         var query = new Request();
-        query.setName(request.request);
+        query.setRequest(request.request);
         query.setUser(repository.findRequestUserByUsername(principal.getName()).get());
         query.setRequestStatus(RequestStatus.DRAFT.getStatus());
         requestService.save(query);
@@ -151,7 +151,9 @@ public class RequestController {
             if (chosenPage.getTotalPages() < page){
                 return ResponseEntity.badRequest().body("Incorrect page!");
             }
-            return ResponseEntity.ok(chosenPage.getContent());
+            return ResponseEntity.ok(chosenPage.getContent()
+                    .stream().peek(e -> e.setRequest(e.getRequest().replaceAll("(.{1})(?!$)", "$1-"))
+                    ).toList());
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body("Can only choose \"asc\" and \"desc\"");
         }
@@ -178,7 +180,10 @@ public class RequestController {
             if (chosenPage.getTotalPages() < page) {
                 return ResponseEntity.badRequest().body("Incorrect page!");
             }
-            return ResponseEntity.ok(chosenPage.getContent());
+
+            return ResponseEntity.ok(chosenPage.getContent()
+            .stream().peek(e -> e.setRequest(e.getRequest().replaceAll("(.{1})(?!$)", "$1-"))
+            ).toList());
         } catch (RuntimeException e){
             return ResponseEntity.badRequest().body("Can only choose \"asc\" and \"desc\"");
         }

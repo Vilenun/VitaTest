@@ -19,7 +19,7 @@ public class RequestService {
     }
     public void update(long id,String request){
         Request requestToUpdate = requestRepository.findById(id).orElseThrow();
-        requestToUpdate.setName(request);
+        requestToUpdate.setRequest(request);
         requestRepository.save(requestToUpdate);
     }
     public void send(long id){
