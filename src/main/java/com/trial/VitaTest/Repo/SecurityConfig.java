@@ -17,8 +17,7 @@ public class SecurityConfig {
                 .csrf(csrf-> csrf.disable())
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests((auth ->
-                        auth.requestMatchers(HttpMethod.POST, "/register")
-                                .permitAll()
+                        auth.requestMatchers(HttpMethod.POST, "/register").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/checkRequests").hasRole("USER")
                                 .requestMatchers(HttpMethod.POST, "/create").hasRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/send").hasRole("USER")
