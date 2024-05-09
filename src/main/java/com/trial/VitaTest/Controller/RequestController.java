@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 public class RequestController {
@@ -124,11 +125,65 @@ public class RequestController {
         if (page < 1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        Page<Request> chosenPage = requestService.findIdAsc(repository.findRequestUserByUsername(principal.getName()).get().getId(), PageRequest.of(page - 1, 5));
+        Page<Request> chosenPage = requestService.findSentAsc(PageRequest.of(page - 1, 5));
         if (chosenPage.getTotalPages() < page){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(chosenPage.getContent());
+    }
+    @GetMapping(path = "/checkSent/desc",params = "page")
+    public ResponseEntity checkSentDesc(Principal principal,@RequestParam(defaultValue = "1") int page) {
+        if (page < 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        Page<Request> chosenPage = requestService.findSentDesc(PageRequest.of(page - 1, 5));
+        if (chosenPage.getTotalPages() < page){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(chosenPage.getContent());
+    }
+
+    @GetMapping(path = "/checkName/desc",params = {"page","name"})
+    public ResponseEntity checkNameDesc(Principal principal,@RequestParam(defaultValue = "1") int page,@RequestParam String name) {
+        if (page < 1 || repository.findByUsernameIgnoreCaseContains(name).isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        List <Integer> ids = repository.findByUsernameIgnoreCaseContains(name).get().stream().map(RequestUser::getId).toList();
+        Page<Request> chosenPage = requestService.findNameDesc(ids,PageRequest.of(page - 1, 5));
+        if (chosenPage.getTotalPages() < page){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(chosenPage.getContent());
+    }
+    @GetMapping(path = "/checkName/asc",params = {"page","name"})
+    public ResponseEntity checkNameAsc(Principal principal,@RequestParam(defaultValue = "1") int page,@RequestParam String name) {
+        if (page < 1 || repository.findByUsernameIgnoreCaseContains(name).isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        List <Integer> ids = repository.findByUsernameIgnoreCaseContains(name).get().stream().map(RequestUser::getId).toList();
+        System.out.println(ids);
+        Page<Request> chosenPage = requestService.findNameAsc(ids,PageRequest.of(page - 1, 5));
+        if (chosenPage.getTotalPages() < page){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(chosenPage.getContent());
+    }
+    @PutMapping (path = "/decision", params = {"id", "decision"})
+    public ResponseEntity decide(@RequestParam Long id,@RequestParam String decision) {
+        if (requestService.findId(id).isEmpty()){
+            return ResponseEntity.badRequest().body("No request found");
+        }
+        if (!RequestStatus.SENT.getStatus().equals(requestService.findId(id).get().getRequestStatus())){
+            return ResponseEntity.badRequest().body("Request is not for SENT, can't change");
+        }
+        try{
+            requestService.decide(decision.toLowerCase(), id);
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body("Wrong decision");
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     record RegistrationRequest(String username, String password, String authority) { }

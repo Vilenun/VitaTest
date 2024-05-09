@@ -29,6 +29,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/checkSent/asc").hasRole("OPER")
                                 .requestMatchers(HttpMethod.GET, "/checkName/desc").hasRole("OPER")
                                 .requestMatchers(HttpMethod.GET, "/checkName/asc").hasRole("OPER")
+                                .requestMatchers(HttpMethod.PUT, "/decision").hasRole("OPER")
                                 .anyRequest().permitAll())
                 );
         return http.build();

@@ -45,7 +45,35 @@ public class RequestService {
     public Page<Request> findIdDesc(int id, Pageable page){
         return requestRepository.findByUserIdOrderByDateDesc(id, page);
     }
+
+    public Page<Request> findSentDesc(Pageable page){
+        return requestRepository.findByRequestStatusOrderByDateDesc(RequestStatus.SENT.getStatus(), page);
+    }
+    public Page<Request> findSentAsc(Pageable page){
+        return requestRepository.findByRequestStatusOrderByDateAsc(RequestStatus.SENT.getStatus(), page);
+    }
+
+    public Page<Request> findNameDesc(List<Integer> ids, Pageable page){
+        return requestRepository.findByUserIdInAndRequestStatusOrderByDateDesc(ids, RequestStatus.SENT.getStatus(), page);
+    }
+    public Page<Request> findNameAsc(List<Integer> ids, Pageable page){
+        return requestRepository.findByUserIdInAndRequestStatusOrderByDateAsc(ids, RequestStatus.SENT.getStatus(), page);
+    }
     public long count(){
         return requestRepository.count();
+    }
+
+    public void decide(String decision, Long id) throws Exception {
+        Request requestToUpdate = requestRepository.findById(id).orElseThrow();
+        switch (decision) {
+            case ("accept"):
+                requestToUpdate.setRequestStatus(RequestStatus.ACCEPTED.getStatus());
+            break;
+            case ("deny"):
+                requestToUpdate.setRequestStatus(RequestStatus.DENIED.getStatus());
+            break;
+            default: throw new Exception();
+        }
+        requestRepository.save(requestToUpdate);
     }
 }

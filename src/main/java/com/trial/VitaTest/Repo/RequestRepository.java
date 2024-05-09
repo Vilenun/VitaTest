@@ -18,5 +18,14 @@ public interface RequestRepository extends PagingAndSortingRepository<Request, L
 
     Page<Request> findByUserIdOrderByDateAsc(int id, Pageable paging);
 
+    Page<Request> findByRequestStatusOrderByDateAsc(String status, Pageable paging);
+
+    Page<Request> findByRequestStatusOrderByDateDesc(String status, Pageable paging);
+
+    Page<Request> findByUserIdInAndRequestStatusOrderByDateDesc( List<Integer> ids, String status, Pageable paging);
+
+    Page<Request> findByUserIdInAndRequestStatusOrderByDateAsc(List<Integer> ids, String status, Pageable paging);
+
+
 
 }
