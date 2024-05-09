@@ -21,7 +21,6 @@ public class RequestUser {
     @Getter
     private String authority;
     @OneToMany(mappedBy = "user")
-    @OrderColumn
     private List<Request> requests = new ArrayList<>();
 
     public void setId(Integer id) {

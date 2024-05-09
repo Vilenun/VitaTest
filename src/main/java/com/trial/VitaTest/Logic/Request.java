@@ -16,8 +16,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name="Requests")
 public class Request {
-    @JsonIgnore
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",nullable = false)
     private long id;
@@ -28,7 +28,6 @@ public class Request {
     private String name;
 
     @Getter
-    @NotBlank
     @Column(name = "requestStatus")
     private String requestStatus;
 

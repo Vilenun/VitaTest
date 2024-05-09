@@ -20,6 +20,9 @@ public class SecurityConfig {
                         auth.requestMatchers(HttpMethod.POST, "/register")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/test").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/check/desc").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/check/asc").hasRole("USER")
+                                .requestMatchers(HttpMethod.POST, "/create").hasRole("USER")
                                 .anyRequest().permitAll())
                 );
         return http.build();
